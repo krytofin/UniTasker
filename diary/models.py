@@ -1,3 +1,18 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 
-# Create your models here.
+class Subject(models.Model):
+    user = models.ForeignKey(to=get_user_model(), on_delete=models.SET_NULL, null=True)
+    title = models.CharField(max_length=255)
+    professor = models.CharField(max_length=255)
+    is_completed = models.BooleanField(default=False)
+
+
+class Homework(models.Model):
+    subject = models.ForeignKey(to=Subject, on_delete=models.CASCADE, related_name='homeworks')
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    deadline = models.DateField()
+    status = models.CharField()
+    created_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now_add=True)
