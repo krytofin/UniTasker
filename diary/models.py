@@ -12,10 +12,21 @@ class Subject(models.Model):
 
 
 class Homework(models.Model):
+    STATUS = (
+            ('t', 'todo'),
+            ('p', 'in_progress'),
+            ('d', 'done'),
+    )
+
+
     subject = models.ForeignKey(to=Subject, on_delete=models.CASCADE, related_name='homeworks')
     title = models.CharField(max_length=255)
     description = models.TextField()
     deadline = models.DateField()
-    status = models.CharField()
+    status = models.CharField(choices=STATUS, max_length=1, default='t')
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    
+
+    def __str__(self):
+        return f'{self.title}: {self.subject.title}, {self.deadline}'
