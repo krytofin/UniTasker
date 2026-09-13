@@ -29,4 +29,4 @@ class Homework(models.Model):
     
 
     def __str__(self):
-        return f'{self.title}: {self.subject.title}, {self.deadline}'
+        return f'{self.subject.title}: {self.title}, {self.deadline}'

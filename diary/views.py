@@ -1,9 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView, ListView, CreateView
 
-from .forms import CreateSubjectForm
+from .forms import CreateSubjectForm, CreateHomeworkForm
 from .models import Homework, Subject
 
 
@@ -33,3 +32,16 @@ class CreateSubjectView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+
+
+class CreateHomeworkView(LoginRequiredMixin, CreateView):
+    template_name = "diary/create_homework.html"
+    form_class = CreateHomeworkForm
+    success_url = reverse_lazy("diary:all_homework")
+
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
