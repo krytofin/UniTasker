@@ -1,0 +1,12 @@
+{% extends "diary/base.html" %}
+
+{% block title %}Create subject{% endblock title %}
+
+{% block content %}
+    <h2>Create subject</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit">Create</button>
+    </form>
+{% endblock content %}

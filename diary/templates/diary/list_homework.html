@@ -3,9 +3,6 @@
 {% block title %}Homework{% endblock title %}
 
 {% block content %}
-    <ul>
-        <li><a href="{% url "diary:all_subjects" %}">My subjects</a></li>
-    </ul>
     <h2>Homework</h2>
     <ul>
         {% for homework in object_list %}
