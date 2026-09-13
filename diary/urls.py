@@ -1,9 +1,10 @@
 from django.urls import path
 
-from .views import DeadlineListView
+from .views import HomeworkListView, SubjectsListView
 
 app_name = 'diary'
 
 urlpatterns = [
-    path("", DeadlineListView.as_view(), name="all_deadlines")
+    path("", HomeworkListView.as_view(), name="all_homework"),
+    path("subjects/", SubjectsListView.as_view(), name="all_subjects"),
 ]
