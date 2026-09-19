@@ -27,6 +27,8 @@ class Homework(models.Model):
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     
+    class Meta:
+        ordering = ['deadline']
 
     def __str__(self):
         return f'{self.subject.title}: {self.title}, {self.deadline}'

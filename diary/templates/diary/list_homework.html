@@ -1,4 +1,5 @@
 {% extends "diary/base.html" %}
+{% load static %}
 
 {% block title %}Homework{% endblock title %}
 
@@ -6,7 +7,9 @@
     <h2>Homework</h2>
     <ul>
         {% for homework in object_list %}
-            <li>{{ homework.subject}}: {{ homework.title }} {{ homework.deadline }}</li>
+        <li id="li_{{ homework.id }}">{{ homework.subject}}: {{ homework.title }} <b>{{ homework.status }}</b> {{ homework.deadline }} <button class="done_btn" id="{{ homework.pk }}">DONE</li>
         {% endfor %}
     </ul>
+
+<script src="{% static "diary/homework_status.js" %}"></script>
 {% endblock content %}
