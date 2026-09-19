@@ -7,7 +7,7 @@
     <h2>Homework</h2>
     <ul>
         {% for homework in object_list %}
-        <li id="li_{{ homework.id }}">{{ homework.subject}}: {{ homework.title }} <b>{{ homework.status }}</b> {{ homework.deadline }} <button class="done_btn" id="{{ homework.pk }}">DONE</li>
+        <li id="li_{{ homework.id }}">{{ homework.subject}}: {{ homework.title }} <b>{{ homework.status }}</b> {{ homework.deadline }} <button class="done_btn" id="{{ homework.pk }}">DONE</button> <a href="{% url "diary:update_homework" homework.pk %}">update info</a></li>
         {% endfor %}
     </ul>
 

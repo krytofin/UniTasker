@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
-from django.views.generic import FormView, ListView, CreateView, View
+from django.views.generic import FormView, ListView, CreateView, UpdateView, View
 from django.http import JsonResponse, HttpRequest
 
 import json
@@ -50,6 +50,18 @@ class CreateHomeworkView(LoginRequiredMixin, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+
+class UpdateHomeworkView(LoginRequiredMixin, UpdateView):
+    template_name = "diary/create_homework.html"
+    form_class = CreateHomeworkForm
+    model = Homework
+    success_url = reverse_lazy("diary:all_homework")
+
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 @method_decorator(csrf_exempt, name='dispatch')
