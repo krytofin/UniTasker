@@ -1,0 +1,13 @@
+{% extends "diary/base.html" %}
+
+{% block title %}Subjects{% endblock title %}
+
+{% block content %}
+    <h2>Subjects</h2>
+    <ul>
+        {% for subject in object_list %}
+        <li id="li_{{subject.id}}">{{ subject.title }}: {{ subject.professor }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}

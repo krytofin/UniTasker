@@ -1,12 +1,15 @@
 {% extends "diary/base.html" %}
+{% load static %}
 
 {% block title %}Subjects{% endblock title %}
 
 {% block content %}
     <h2>Subjects</h2>
     <ul>
-        {% for subjec in object_list %}
-            <li>{{ subjec.title }}: {{ subjec.professor }}</li>
+        {% for subject in object_list %}
+        <li id="li_{{subject.id}}">{{ subject.title }}: {{ subject.professor }} <button class="btn_fin" id="{{ subject.pk }}">finish</button></li>
         {% endfor %}
     </ul>
+
+    <script src="{% static "diary/archive_subject.js" %}"></script>
 {% endblock content %}

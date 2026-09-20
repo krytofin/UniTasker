@@ -16,16 +16,17 @@ class HomeworkListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        homeworks = Homework.objects.filter(subject__user=user, status__in=['p', 't'])
+        homeworks = Homework.objects.filter(subject__user=user, status__in=['p', 't'], subject__is_completed=False)
         return homeworks
 
 
 class SubjectsListView(LoginRequiredMixin, ListView):
     template_name = "diary/list_subjects.html"
+    is_completed = False
 
     def get_queryset(self):
         user = self.request.user
-        subjects = Subject.objects.filter(user=user)
+        subjects = Subject.objects.filter(user=user, is_completed=self.is_completed)
         return subjects
 
 
@@ -85,3 +86,25 @@ class CompleteHomework(LoginRequiredMixin, View):
             return JsonResponse({'status': 'error', 'error': f'{homework_id} object does not exist'}, status=400)
         return JsonResponse({'status': 'success'})
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ArchiveSubject(LoginRequiredMixin, View):
+    def post(self, request:HttpRequest):
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'error': 'Invalid JSON'}, status=400)
+        subject_id = data.get('id') 
+        if not subject_id:
+            return JsonResponse({'status': 'error', 'error': 'null id'}, status=400)
+        try:
+            subject = Subject.objects.get(pk=subject_id)
+            subject.is_completed = True
+            subject.save()
+        except Subject.DoesNotExist:
+            return JsonResponse({'status': 'error', 'error': f'{subject_id} object does not exist'}, status=400)
+        return JsonResponse({'status': 'success'})
+
+class ArchiveSubjectListView(SubjectsListView):
+    template_name = 'diary/view_archive_subjects.html'
+    is_completed = True
