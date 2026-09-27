@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -32,3 +33,7 @@ class Homework(models.Model):
 
     def __str__(self):
         return f'{self.subject.title}: {self.title}, {self.deadline}'
+
+    def is_burning(self):
+        one_day = 24
+        return (timezone.now().date()-self.deadline).total_seconds() / 60 / 60 < one_day
