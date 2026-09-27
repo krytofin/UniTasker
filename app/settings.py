@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+from django.urls import reverse_lazy
 from dotenv import load_dotenv
 from pathlib import Path
 import os
@@ -135,3 +136,6 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+
+LOGIN_REDIRECT_URL = reverse_lazy('diary:all_homework')

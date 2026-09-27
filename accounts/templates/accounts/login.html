@@ -1,8 +1,63 @@
-{% extends "accounts/base.html" %} {% block title %}Login{% endblock title %} {%
+{% extends "accounts/base.html" %} 
+{% block title %}Login{% endblock title %}
+
 {% block content %}
-<form action="" method="post">
-  {{form.as_div}}
-  <button type="submit">Login</button>
-  {% csrf_token %}
-</form>
+<main class="bg-gray-50 px-4 md:px-8 dark:bg-neutral-900">
+   <div class="min-h-screen flex flex-col items-center justify-center">
+      <div class="max-w-md w-full">
+         <div class="p-6 rounded-lg bg-white border border-slate-300 shadow-xs md:p-8 dark:bg-neutral-800 dark:border-neutral-700">
+            <h1 class="text-slate-900 text-center text-3xl font-bold dark:text-slate-50">Login</h1>
+
+            <form class="space-y-6 mt-10" method="post">
+               
+               {# Красивый блок для вывода ошибок формы #}
+               {% if form.errors %}
+               <div class="p-4 rounded-md bg-red-50 border border-red-200 dark:bg-red-950/30 dark:border-red-900/50">
+                  <div class="flex">
+                     <div class="flex-shrink-0">
+                        <!-- Иконка предупреждения -->
+                        <svg class="h-5 w-5 text-red-600 dark:text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                        </svg>
+                     </div>
+                     <div class="ml-3">
+                        <h3 class="text-sm font-medium text-red-800 dark:text-red-200">Please, fix next errors: </h3>
+                        <div class="mt-2 text-sm text-red-700 dark:text-red-300/90">
+                           <ul class="list-disc pl-5 space-y-1">
+                              {% for field, errors in form.errors.items %}
+                                 {% for error in errors %}
+                                    <li>{% if field != '__all__' %}<strong>{{ field|capfirst }}:</strong> {% endif %}{{ error }}</li>
+                                  Pall{% endfor %}
+                              {% endfor %}
+                           </ul>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               {% endif %}
+
+               <div>
+                  <label for="username" class="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50">Username</label>
+                  <input type="text" id="username" name="username" required
+                     class="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full outline-1 -outline-offset-1 outline-slate-300 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 dark:text-slate-50 dark:bg-neutral-700 dark:outline-neutral-600" />
+               </div>
+
+               <div>
+                  <label for="password" class="mb-2 text-slate-900 font-medium text-sm inline-block dark:text-slate-50">Password</label>
+                  <input type="password" id="password" name="password" required
+                     class="px-3 py-2.5 text-sm text-slate-900 rounded-md bg-white w-full outline-1 -outline-offset-1 outline-slate-300 focus:outline-2 focus:-outline-offset-2 focus:outline-blue-600 dark:text-slate-50 dark:bg-neutral-700 dark:outline-neutral-600" />
+               </div>
+
+               {% csrf_token %}
+
+               <button type="submit"
+                  class="w-full py-2 px-3.5 text-sm rounded-md font-semibold cursor-pointer tracking-wide text-white border border-blue-600 bg-blue-600 hover:bg-blue-700 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">
+                  Login
+               </button>
+            </form>
+         </div>
+      </div>
+   </div>
+</main>
 {% endblock content %}
+
