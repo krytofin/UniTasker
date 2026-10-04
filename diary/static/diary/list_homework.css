@@ -1,0 +1,189 @@
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.dashboard-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+.search-box {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+}
+
+#clientSearchInput {
+    width: 100%;
+    padding: 12px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#clientSearchInput:focus {
+    border-color: #3b82f6 !important;
+}
+
+#homeworkCardsContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.homework-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.card-subject-tag {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+    background: #e2e8f0;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.card-burning-tag {
+    font-size: 11px;
+    background: #ef4444;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+.homework-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0 0 10px 0;
+}
+
+.homework-card p {
+    font-size: 14px;
+    color: #475569;
+    margin: 0 0 15px 0;
+    line-height: 1.5;
+}
+
+.card-footer {
+    margin-top: auto;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-deadline {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-update {
+    text-decoration: none;
+    font-size: 13px;
+    color: #2563eb;
+    background: #eff6ff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.done_btn {
+    border: none;
+    font-size: 13px;
+    color: white;
+    background: #10b981;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover, .btn-update:hover {
+    filter: brightness(0.9);
+}
+
+#noResultsMessage {
+    display: none;
+    text-align: center;
+    padding: 50px;
+    color: #64748b;
+    font-size: 18px;
+}
+
+/* Keyframe Animations */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+
+.filters-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.filters-row select {
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+    color: #334155;
+    cursor: pointer;
+    outline: none;
+}
+
+.filters-row select:focus {
+    border-color: #3b82f6;
+}
+
+.card-overdue-tag {
+    font-size: 11px;
+    background: #991b1b;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+}

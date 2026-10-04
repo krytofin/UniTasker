@@ -1,13 +1,118 @@
 {% extends "diary/base.html" %}
+{% load static %}
 
 {% block title %}Subjects{% endblock title %}
 
+{% block css %}
+<style>
+    .subjects-shell {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .subjects-shell h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0 0 24px;
+    }
+
+    .subjects-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+    }
+
+    .subjects-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 16px 20px;
+        transition: box-shadow 0.15s, border-color 0.15s;
+    }
+
+    .subjects-list li:hover {
+        border-color: #cbd5e1;
+        box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    .subject-info {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        min-width: 0;
+        flex-wrap: wrap;
+    }
+
+    .subject-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--ink);
+    }
+
+    .subject-professor {
+        font-size: 14px;
+        color: var(--ink-faint);
+    }
+    .subject-professor::before {
+        content: "👨‍🏫 ";
+    }
+    .subject-professor:empty::before {
+        content: "";
+    }
+
+    .btn_fin {
+        appearance: none;
+        flex-shrink: 0;
+        border: 1.5px solid var(--line);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .btn_fin:hover {
+        background: var(--accent-soft);
+        border-color: var(--accent);
+        color: var(--accent-dark);
+    }
+
+    .subjects-empty {
+        color: var(--ink-faint);
+        font-size: 15px;
+        padding: 40px 0;
+        text-align: center;
+    }
+</style>
+{% endblock css %}
+
 {% block content %}
-    <h2>Subjects</h2>
-    <ul>
+<div class="subjects-shell">
+    <h2>Archived subjects</h2>
+
+    <ul class="subjects-list">
         {% for subject in object_list %}
-        <li id="li_{{subject.id}}">{{ subject.title }}: {{ subject.professor }}</li>
+        <li id="li_{{ subject.id }}">
+            <div class="subject-info">
+                <span class="subject-title">{{ subject.title }}</span>
+                <span class="subject-professor">{{ subject.professor }}</span>
+            </div>
+        </li>
+        {% empty %}
+        <li class="subjects-empty" style="justify-content: center; border-style: dashed;">
+            No subjects yet.
+        </li>
         {% endfor %}
     </ul>
-
+</div>
 {% endblock content %}

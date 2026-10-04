@@ -1,15 +1,236 @@
 {% extends "diary/base.html" %}
 {% load static %}
 
-{% block title %}Homework{% endblock title %}
+{% block title %}Manage Deadlines | UniTasker{% endblock title %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'diary/list_homework.css' %}">
+{% endblock css %}
 
 {% block content %}
-    <h2>Homework</h2>
-    <ul>
-        {% for homework in object_list %}
-        <li id="li_{{ homework.id }}">{{ homework.subject}}: {{ homework.title }}| {{homework.description}} | <b>{{ homework.get_status_display}}</b> {{ homework.deadline }} {{homework.is_burning}} <button class="done_btn" id="{{ homework.pk }}">DONE</button> <a href="{% url "diary:update_homework" homework.pk %}">update info</a></li>
-        {% endfor %}
-    </ul>
+<div class="dashboard-container">
 
-<script src="{% static "diary/homework_status.js" %}"></script>
+    <div class="dashboard-header">
+        <h2>📚 Current Homework Assignments</h2>
+        <div class="search-box">
+            <input type="text" id="clientSearchInput" placeholder="🔍 Search by title or subject..." oninput="filterHomeworks()">
+        </div>
+    </div>
+
+    <div class="filters-row">
+        <select id="subjectFilter" onchange="filterHomeworks()">
+            <option value="">All subjects</option>
+        </select>
+
+        <select id="professorFilter" onchange="filterHomeworks()">
+            <option value="">All professors</option>
+        </select>
+
+        <select id="deadlineFilter" onchange="filterHomeworks()">
+            <option value="">All deadlines</option>
+            <option value="overdue">⏰ Overdue</option>
+            <option value="burning">🔥 Urgent (due soon)</option>
+            <option value="future">📅 Upcoming</option>
+            <option value="done">✓ Completed</option>
+        </select>
+    </div>
+
+    <div id="homeworkCardsContainer"></div>
+
+    <div id="noResultsMessage">
+        No assignments match your search query 🖥️
+    </div>
+</div>
+
+
+<script type="module">
+    import Fuse from 'https://cdn.jsdelivr.net/npm/fuse.js@7.5.0/dist/fuse.mjs';
+
+    const homeworksData = [
+        {% for homework in object_list %}
+            {{ homework.as_object|safe }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    let fuse;
+
+    function initFuse() {
+        const options = {
+            keys: ['title', 'subject', 'description'],
+            threshold: 0.3
+        };
+        fuse = new Fuse(homeworksData, options);
+    }
+
+    function populateFilterDropdowns() {
+        const subjectSelect = document.getElementById('subjectFilter');
+        const profSelect = document.getElementById('professorFilter');
+
+        if (!subjectSelect || !profSelect) return;
+
+        const subjects = new Set();
+        const professors = new Set();
+
+        homeworksData.forEach(task => {
+            if (task.subject) subjects.add(task.subject);
+            if (task.professor) professors.add(task.professor);
+        });
+
+        subjects.forEach(sub => {
+            const opt = document.createElement('option');
+            opt.value = sub;
+            opt.textContent = sub;
+            subjectSelect.appendChild(opt);
+        });
+
+        professors.forEach(prof => {
+            const opt = document.createElement('option');
+            opt.value = prof;
+            opt.textContent = prof;
+            profSelect.appendChild(opt);
+        });
+    }
+
+    function isOverdue(taskDeadlineStr) {
+        const parts = taskDeadlineStr.match(/(\w+) (\d+), (\d+) (\d+):(\d+)/);
+        if (!parts) return false;
+        const dateObj = new Date(Date.parse(taskDeadlineStr));
+        return dateObj < new Date();
+    }
+
+    function renderCards(tasks) {
+        const container = document.getElementById('homeworkCardsContainer');
+        const noResults = document.getElementById('noResultsMessage');
+        container.innerHTML = '';
+
+        if (tasks.length === 0) {
+            noResults.style.display = 'block';
+            return;
+        } else {
+            noResults.style.display = 'none';
+        }
+
+        tasks.forEach(task => {
+            const overdue = task.status_raw !== 'd' && isOverdue(task.deadline);
+
+            // Порядок важен: завершённое — всегда зелёное и приглушённое,
+            // затем просроченное — самое заметное (тёмно-красное),
+            // затем "горит скоро" — оранжевое, и только потом обычное.
+            let statusStyles = 'border-left: 6px solid #3b82f6; background: #ffffff; opacity: 1;';
+            let badgeHtml = '';
+
+            if (task.status_raw === 'd') {
+                statusStyles = 'border-left: 6px solid #10b981; background: #ffffff; opacity: 0.6;';
+            } else if (overdue) {
+                statusStyles = 'border-left: 6px solid #991b1b; background: #fef2f2; opacity: 1;';
+                badgeHtml = '<span class="card-overdue-tag">⏰ OVERDUE</span>';
+            } else if (task.is_burning) {
+                statusStyles = 'border-left: 6px solid #f97316; background: #fff7ed; opacity: 1;';
+                badgeHtml = '<span class="card-burning-tag">URGENT🔥</span>';
+            }
+
+            const cardHtml = `
+                <div class="homework-card" id="card_${task.id}" style="${statusStyles}">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="card-subject-tag">${task.subject}</span>
+                            ${badgeHtml}
+                        </div>
+                        <h3>${task.title}</h3>
+                        <p>${task.description}</p>
+                        ${task.professor ? `<div style="font-size: 13px; color: #64748b; margin-bottom: 10px;">👨‍🏫 Prof: ${task.professor}</div>` : ''}
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="card-deadline" ${overdue ? 'style="color: #991b1b; font-weight: 600;"' : ''}>
+                            📅 <b>Due by:</b> <span>${task.deadline}</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="${task.update_url}" class="btn-update">✏️ Edit</a>
+                            <button class="done_btn" id="${task.id}">
+                                ${task.status_raw === 'd' ? '✓ Completed' : 'Mark Done'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', cardHtml);
+        });
+
+        attachDoneButtonHandlers();
+    }
+
+    function attachDoneButtonHandlers() {
+        const buttons = document.querySelectorAll('.done_btn');
+
+        for (let btn of buttons) {
+            btn.addEventListener('click', async () => {
+                const url = "/homework/update/";
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        body: JSON.stringify({ 'id': `${btn.id}`, 'status': 'd' }),
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Response status: ${response.status}`);
+                    }
+
+                    const item = document.querySelector(`#card_${btn.id}`);
+                    item.remove();
+                } catch (error) {
+                    console.error(error.message);
+                }
+            });
+        }
+    }
+
+    function applyFiltersAndSearch() {
+        const searchTxt = document.getElementById('clientSearchInput').value.trim();
+        const subjectFilterEl = document.getElementById('subjectFilter');
+        const professorFilterEl = document.getElementById('professorFilter');
+        const deadlineFilterEl = document.getElementById('deadlineFilter');
+
+        const selectedSubject = subjectFilterEl ? subjectFilterEl.value : '';
+        const selectedProf = professorFilterEl ? professorFilterEl.value : '';
+        const selectedDeadlineType = deadlineFilterEl ? deadlineFilterEl.value : '';
+
+        let baseList = homeworksData;
+
+        if (searchTxt !== '') {
+            const results = fuse.search(searchTxt);
+            baseList = results.map(result => result.item);
+        }
+
+        const filteredList = baseList.filter(task => {
+            if (selectedSubject && task.subject !== selectedSubject) return false;
+            if (selectedProf && task.professor !== selectedProf) return false;
+
+            if (selectedDeadlineType === 'burning') {
+                if (!task.is_burning || task.status_raw === 'd' || isOverdue(task.deadline)) return false;
+            } else if (selectedDeadlineType === 'overdue') {
+                if (!isOverdue(task.deadline) || task.status_raw === 'd') return false;
+            } else if (selectedDeadlineType === 'future') {
+                if (isOverdue(task.deadline) || task.status_raw === 'd') return false;
+            } else if (selectedDeadlineType === 'done') {
+                if (task.status_raw !== 'd') return false;
+            } else {
+                // По умолчанию (фильтр не выбран) выполненные задания скрыты,
+                // их видно только явно выбрав "✓ Completed" в фильтре дедлайнов.
+                if (task.status_raw === 'd') return false;
+            }
+
+            return true;
+        });
+
+        renderCards(filteredList);
+    }
+
+    window.filterHomeworks = applyFiltersAndSearch;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initFuse();
+        populateFilterDropdowns();
+        renderCards(homeworksData.filter(task => task.status_raw !== 'd'));
+    });
+</script>
 {% endblock content %}

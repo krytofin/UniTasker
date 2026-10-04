@@ -2,11 +2,150 @@
 
 {% block title %}Create subject{% endblock title %}
 
+{% block css %}
+<style>
+    .form-shell {
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    .form-eyebrow {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--accent-dark);
+        margin: 0 0 6px;
+    }
+
+    .form-shell h2 {
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0 0 28px;
+    }
+
+    .task-form {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 28px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .task-form > div {
+        margin-bottom: 20px;
+    }
+    .task-form > div:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .task-form label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+    }
+
+    .task-form input[type="text"],
+    .task-form input[type="date"],
+    .task-form input[type="datetime-local"],
+    .task-form input[type="number"],
+    .task-form select,
+    .task-form textarea {
+        width: 100%;
+        padding: 11px 14px;
+        font-size: 15px;
+        font-family: inherit;
+        color: var(--ink);
+        background: var(--paper);
+        border: 1.5px solid var(--line);
+        border-radius: 9px;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .task-form textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .task-form input:focus,
+    .task-form select:focus,
+    .task-form textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .task-form .helptext {
+        display: block;
+        font-size: 12.5px;
+        color: var(--ink-faint);
+        margin-top: 5px;
+    }
+
+    .task-form ul.errorlist {
+        list-style: none;
+        margin: 6px 0 0;
+        padding: 0;
+    }
+    .task-form ul.errorlist li {
+        font-size: 13px;
+        color: var(--danger);
+        font-weight: 500;
+    }
+    .task-form div:has(ul.errorlist) input,
+    .task-form div:has(ul.errorlist) select,
+    .task-form div:has(ul.errorlist) textarea {
+        border-color: var(--danger);
+    }
+
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    .btn-submit {
+        appearance: none;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-size: 15px;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 9px;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+    .btn-submit:hover { background: var(--accent-dark); }
+
+    .btn-cancel {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        text-decoration: none;
+        padding: 12px 8px;
+    }
+    .btn-cancel:hover { color: var(--ink); }
+</style>
+{% endblock css %}
+
 {% block content %}
+<div class="form-shell">
+    <p class="form-eyebrow">UniTasker · Subject</p>
     <h2>Create subject</h2>
-    <form action="" method="post">
+
+    <form class="task-form" action="" method="post">
         {% csrf_token %}
         {{ form.as_div }}
-        <button type="submit">Create</button>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-submit">Create</button>
+            <a href="{% url "diary:all_subjects" %}" class="btn-cancel">Cancel</a>
+        </div>
     </form>
+</div>
 {% endblock content %}

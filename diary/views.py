@@ -16,7 +16,8 @@ class HomeworkListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        homeworks = Homework.objects.filter(subject__user=user, status__in=['p', 't'], subject__is_completed=False)
+#        homeworks = Homework.objects.filter(subject__user=user, status__in=['p', 't'], subject__is_completed=False)
+        homeworks = Homework.objects.filter(subject__user=user)
         return homeworks
 
 
@@ -39,11 +40,20 @@ class CreateSubjectView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['title'] = "Create"
+        return data
 
 class CreateHomeworkView(LoginRequiredMixin, CreateView):
     template_name = "diary/create_homework.html"
     form_class = CreateHomeworkForm
     success_url = reverse_lazy("diary:all_homework")
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['title'] = "Create"
+        return data
 
 
     def get_form_kwargs(self):
@@ -64,6 +74,10 @@ class UpdateHomeworkView(LoginRequiredMixin, UpdateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        data['title'] = "Update"
+        return data
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CompleteHomework(LoginRequiredMixin, View):
